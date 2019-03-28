@@ -1,0 +1,11 @@
+p.teaser {
+    text-indent: 30px; 
+}
+
+.form-check-label {
+	margin-left: 5%;
+}
+
+.dropdown-toggle:after {
+	display: none;
+}

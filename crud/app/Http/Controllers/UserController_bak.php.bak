@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Users;
+
+class UserController_bak extends Controller {
+	public function __construct() {
+		
+	}
+
+	public function add(Request $request) {
+		$users = new Users();
+		$data = $this->validate($request, [
+    		'username' => 'required|unique:users',
+    		'pwd' => 'required',
+    		'email' => 'required|unique:users',
+    		'_token' => 'required'
+    	]);
+    	$users->addUsers($data);
+    	return redirect('/create')->with('success', 'New User is added successfully!');
+	}
+
+	public function view() {
+		$users = new Users();
+		$viewData = $users->getUsers();
+		return view('view', compact('viewData'));
+	}
+
+	public function allqueries() {
+		$users = new Users();
+		$queriesData = (!empty($users->getAllQueries()) ? $users->getAllQueries() : array());
+		$getCitySubGroup = (!empty($users->getCitySubGroup()) ? $users->getCitySubGroup() : array());
+		$getAnnualTurnOver = (!empty($users->getAnnualTurnOver()) ? $users->getAnnualTurnOver() : array());
+		$getQueryStatus = (!empty($users->getQueryStatus()) ? $users->getQueryStatus() : array());
+		$getLoanType = (!empty($users->getLoanType()) ? $users->getLoanType() : array());
+		$getUserAssign = (!empty($users->getUserAssign()) ? $users->getUserAssign() : array());
+		$getToolType = (!empty($users->getToolType()) ? $users->getToolType() : array());
+		$getCampaignSource = (!empty($users->getCampaignSource()) ? $users->getCampaignSource() : array());
+		return view('allqueries', compact('queriesData', 'getCitySubGroup', 'getAnnualTurnOver', 'getQueryStatus', 'getLoanType', 'getUserAssign', 'getToolType', 'getCampaignSource'));
+	}
+
+	public function filterqueries(Request $request) {
+		$users = new Users();
+		if(!empty($request->input())) {
+			if(!empty($request->input('filter')) && ($request->input('filter') == 'Filter' || $request->input('filter') == 'Clear')) {
+				#Filter / Clear Request
+				$getCitySubGroup = (!empty($users->getCitySubGroup()) ? $users->getCitySubGroup() : array());
+				$getAnnualTurnOver = (!empty($users->getAnnualTurnOver()) ? $users->getAnnualTurnOver() : array());
+				$getQueryStatus = (!empty($users->getQueryStatus()) ? $users->getQueryStatus() : array());
+				$getLoanType = (!empty($users->getLoanType()) ? $users->getLoanType() : array());
+				$getUserAssign = (!empty($users->getUserAssign()) ? $users->getUserAssign() : array());
+				$getToolType = (!empty($users->getToolType()) ? $users->getToolType() : array());
+				$getCampaignSource = (!empty($users->getCampaignSource()) ? $users->getCampaignSource() : array());
+				$queriesData = $users->getAllQueriesWithParams($request->input(), $request->input('filter'));
+			} else {
+				#Invalid Request
+				$queriesData = $users->getAllQueries();
+				\Session::flash('failed', 'Invalid parameters for filtering!');
+			}
+			// print_r($queriesData);
+			if($request->input('filter') == 'Clear') {
+				return redirect('allqueries')->with(compact('queriesData', 'getCitySubGroup', 'getAnnualTurnOver', 'getQueryStatus', 'getLoanType', 'getUserAssign', 'getToolType', 'getCampaignSource'));
+			} else {
+				return view('allqueries', compact('queriesData', 'getCitySubGroup', 'getAnnualTurnOver', 'getQueryStatus', 'getLoanType', 'getUserAssign', 'getToolType', 'getCampaignSource'));
+			}
+		}
+	}
+}

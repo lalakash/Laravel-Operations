@@ -1,0 +1,1 @@
+<center>&copy; 2019. Myloancare</center>
